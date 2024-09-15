@@ -1,0 +1,7 @@
+(defun fact-aux (n res)
+  (cond
+    ((eql n 0) res)
+    (t (fact-aux (- n 1) (* n res)))))
+(defun fact (n)
+  (fact-aux n 1))
+(format t "Factorial of 10 is ~A~%" (fact 10))
