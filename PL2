@@ -1,0 +1,44 @@
+(defmacro validate (func-def)
+  `(let ((def ',func-def))
+     (cond
+       ((not (listp def))
+        (format t "Error: Not a list~%")
+        nil)
+       ((< (length def) 4)
+        (format t "Error: Must have at least 4 items~%")
+        nil)
+       ((not (eq (first def) 'defun))
+        (format t "Error: First item must be 'defun~%")
+        nil)
+       (t
+        (let ((func-name (second def))
+              (params (third def)))
+          (format t "Function name: ~A (~A)~%" 
+                  func-name 
+                  (if (atom func-name) "Valid" "Invalid"))
+          (if (not (listp params))
+              (format t "Error: Parameters must be a list~%")
+              (dolist (param params)
+                (format t "Parameter: ~A (~A)~%" 
+                        param 
+                        (if (member param '(x y z)) "Allowed" "Not allowed"))))
+          (let ((valid (and (atom func-name)
+                            (every #'(lambda (p) (member p '(x y z))) params))))
+            (format t "Function definition is ~A~%" (if valid "valid" "not valid"))
+            valid))))))
+
+;; Test cases
+(defun run-tests ()
+  (format t "~%Test 1:~%")
+  (validate (defun abc (x y) (+ x y)))
+  
+  (format t "~%Test 2:~%")
+  (validate (defun invalid (x y t) (* x y t)))
+  
+  (format t "~%Test 3:~%")
+  (validate (defun xyz (y z) (- y z)))
+  
+  (format t "~%Test 4:~%")
+  (validate (defun another-invalid (x a) (/ x a))))
+
+(run-tests)
